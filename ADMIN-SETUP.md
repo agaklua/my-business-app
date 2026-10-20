@@ -1,25 +1,14 @@
 # HAGAKON HOTELL admin setup
 
-The admin page is deployed at `/admin.html`. It is intentionally disabled until a Supabase project is connected. The public site can still accept enquiries by opening an email draft.
+The admin page is deployed at `/admin`. The site is connected to its Supabase project, and the database tables, access policies, and photo storage bucket have been installed. The remaining step is to create the hotel owner's sign-in account.
 
-## Connect the database
+## Finish admin access
 
-1. Create a Supabase project and wait for it to finish provisioning.
-2. In **SQL Editor**, run all of `supabase/schema.sql` from this repository. It creates the rooms, gallery, and booking-enquiry tables, access policies, and the photo storage bucket.
-3. In **Authentication → Users**, add the hotel owner's account. Keep public sign-ups disabled; only accounts you add should access the dashboard.
-4. In **Project Settings → API**, copy the Project URL and the publishable key (or legacy `anon` key). Add them to `public-config.js`:
+1. In Supabase **Authentication → Users**, add the hotel owner's account. Keep public sign-ups disabled; only accounts you add should access the dashboard.
+2. Visit [the HAGAKON HOTELL admin page](https://the-amani-house.vercel.app/admin) and sign in with that account.
+3. In the dashboard, add the hotel's real room names and rates, then upload actual hotel photos. Until then, the public site uses illustrative room details and photos.
 
-   ```js
-   window.HAGAKON_CONFIG = {
-     supabaseUrl: "https://YOUR-PROJECT.supabase.co",
-     supabaseAnonKey: "YOUR-PUBLISHABLE-OR-ANON-KEY"
-   };
-   ```
-
-   These browser values are public by design. Never put a `service_role` or secret key in this file, the website, GitHub, or a message.
-
-5. Commit and push the updated `public-config.js` to GitHub. Vercel will redeploy from the connected repository. Then visit `https://the-amani-house.vercel.app/admin.html` and sign in with the owner account.
-6. In the dashboard, add the hotel's real room names and rates, then upload actual hotel photos. Until then, the public site uses illustrative room details and photos.
+The database and site connection are already set up. The public browser key is safe to expose; never put a `service_role` or secret key in the site, GitHub, or a message. The booking form now saves enquiries in Supabase after the guest agrees to the consent notice.
 
 ## Current details to confirm
 
