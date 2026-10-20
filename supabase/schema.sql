@@ -1,4 +1,4 @@
--- HAGAKON HOTELL admin database
+-- HAGAKON HOTEL admin database
 -- Run this once in the Supabase SQL Editor. Keep public sign-ups disabled.
 create extension if not exists pgcrypto;
 
