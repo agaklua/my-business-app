@@ -16,6 +16,7 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const views = [loginView, forgotView, resetView, dashboardView];
   const showView = view => views.forEach(item => { item.hidden = item !== view; });
+  const clearRecoveryUrl = () => window.history.replaceState({}, document.title, window.location.pathname);
   const showLogin = () => showView(loginView);
   const showForgot = () => { document.querySelector('#recovery-email').value = document.querySelector('#admin-email').value; showView(forgotView); };
   const showReset = () => showView(resetView);
@@ -50,8 +51,10 @@
     const {error} = await client.auth.updateUser({password});
     if (error) { message.textContent = error.message; return; }
     document.querySelector('#reset-form').reset();
-    message.textContent = 'Password updated. You can now sign in with your new password.';
-    setTimeout(showLogin, 1800);
+    clearRecoveryUrl();
+    await client.auth.signOut();
+    showLogin();
+    loginMessage.textContent = 'Password updated. Sign in with your new password.';
   });
 
   async function loadData() {
@@ -71,7 +74,7 @@
     document.querySelector('#enquiry-count').textContent = enquiries.filter(item => item.status === 'new').length;
     const root = document.querySelector('#enquiries-list');
     if (!enquiries.length) { root.innerHTML = '<div class="empty-state">No booking enquiries yet. New guest enquiries will appear here.</div>'; return; }
-    root.innerHTML = enquiries.map(item => `<article class="enquiry-card" data-id="${esc(item.id)}"><div class="enquiry-top"><h3>${esc(item.name)}</h3><span class="enquiry-date">${esc(new Date(item.created_at).toLocaleString())}</span></div><div class="enquiry-meta">${esc(item.checkin)} → ${esc(item.checkout)} · ${esc(item.guests)} guest(s) · ${esc(item.room_name || 'Any room')}<br><a href="mailto:${encodeURIComponent(item.email)}">${esc(item.email)}</a>${item.phone ? ` · ${esc(item.phone)}` : ''}</div>${item.message ? `<p class="enquiry-message">${esc(item.message)}</p>` : ''}<div class="enquiry-actions"><label>Status <select data-status><option value="new" ${item.status==='new'?'selected':''}>New</option><option value="contacted" ${item.status==='contacted'?'selected':''}>Contacted</option><option value="closed" ${item.status==='closed'?'selected':''}>Closed</option></select></label><a href="mailto:${encodeURIComponent(item.email)}?subject=${encodeURIComponent('Your HAGAKON HOTELL enquiry')}">Reply by email ↗</a></div></article>`).join('');
+    root.innerHTML = enquiries.map(item => `<article class="enquiry-card" data-id="${esc(item.id)}"><div class="enquiry-top"><h3>${esc(item.name)}</h3><span class="enquiry-date">${esc(new Date(item.created_at).toLocaleString())}</span></div><div class="enquiry-meta">${esc(item.checkin)} → ${esc(item.checkout)} · ${esc(item.guests)} guest(s) · ${esc(item.room_name || 'Any room')}<br><a href="mailto:${encodeURIComponent(item.email)}">${esc(item.email)}</a>${item.phone ? ` · ${esc(item.phone)}` : ''}</div>${item.message ? `<p class="enquiry-message">${esc(item.message)}</p>` : ''}<div class="enquiry-actions"><label>Status <select data-status><option value="new" ${item.status==='new'?'selected':''}>New</option><option value="contacted" ${item.status==='contacted'?'selected':''}>Contacted</option><option value="closed" ${item.status==='closed'?'selected':''}>Closed</option></select></label><a href="mailto:${encodeURIComponent(item.email)}?subject=${encodeURIComponent('Your HAGAKON HOTEL enquiry')}">Reply by email ↗</a></div></article>`).join('');
   }
   function renderRooms() {
     const root = document.querySelector('#rooms-list');
@@ -152,8 +155,8 @@
     else if (event === 'SIGNED_OUT') showLogin();
   });
   client.auth.getSession().then(({data}) => {
-    if (new URLSearchParams(window.location.search).has('recovery')) showReset();
+    if (new URLSearchParams(window.location.search).has('recovery') && data.session) showReset();
     else if (data.session) { document.querySelector('#current-admin-email').textContent = data.session.user?.email || ''; showDashboard(); loadData(); }
-    else showLogin();
+    else { clearRecoveryUrl(); showLogin(); }
   });
 })();
