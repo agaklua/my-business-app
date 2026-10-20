@@ -2,6 +2,8 @@
   const config = window.HAGAKON_CONFIG || {};
   const ready = Boolean(config.supabaseUrl && config.supabaseAnonKey && window.supabase);
   const loginView = document.querySelector('#login-view');
+  const forgotView = document.querySelector('#forgot-view');
+  const resetView = document.querySelector('#reset-view');
   const dashboardView = document.querySelector('#dashboard-view');
   const setupNote = document.querySelector('#setup-note');
   const loginForm = document.querySelector('#login-form');
@@ -12,8 +14,12 @@
   let enquiries = [];
   let photos = [];
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-  const showLogin = () => { loginView.hidden = false; dashboardView.hidden = true; };
-  const showDashboard = () => { loginView.hidden = true; dashboardView.hidden = false; };
+  const views = [loginView, forgotView, resetView, dashboardView];
+  const showView = view => views.forEach(item => { item.hidden = item !== view; });
+  const showLogin = () => showView(loginView);
+  const showForgot = () => { document.querySelector('#recovery-email').value = document.querySelector('#admin-email').value; showView(forgotView); };
+  const showReset = () => showView(resetView);
+  const showDashboard = () => showView(dashboardView);
   const report = (message, target = dashboardMessage) => { target.textContent = message; };
 
   if (!ready) {
@@ -22,6 +28,31 @@
     return;
   }
   client = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+
+  document.querySelector('#show-forgot-password').addEventListener('click', showForgot);
+  document.querySelector('#back-to-login').addEventListener('click', showLogin);
+  document.querySelector('#forgot-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    const message = document.querySelector('#forgot-message');
+    message.textContent = 'Sending reset link…';
+    const {error} = await client.auth.resetPasswordForEmail(document.querySelector('#recovery-email').value.trim(), {
+      redirectTo: `${window.location.origin}/admin.html?recovery=1`
+    });
+    message.textContent = error ? `Could not send the reset link: ${error.message}` : 'If an admin account uses this email, a password reset link is on its way. Check your inbox and spam folder.';
+  });
+  document.querySelector('#reset-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    const password = document.querySelector('#new-password').value;
+    const confirm = document.querySelector('#confirm-password').value;
+    const message = document.querySelector('#reset-message');
+    if (password !== confirm) { message.textContent = 'Those passwords do not match.'; return; }
+    message.textContent = 'Updating password…';
+    const {error} = await client.auth.updateUser({password});
+    if (error) { message.textContent = error.message; return; }
+    document.querySelector('#reset-form').reset();
+    message.textContent = 'Password updated. You can now sign in with your new password.';
+    setTimeout(showLogin, 1800);
+  });
 
   async function loadData() {
     report('Loading dashboard…');
@@ -52,9 +83,18 @@
   }
   loginForm.addEventListener('submit', async event => {
     event.preventDefault(); loginMessage.textContent = 'Signing in…';
-    const {error} = await client.auth.signInWithPassword({email:document.querySelector('#admin-email').value,password:document.querySelector('#admin-password').value});
+    const {data,error} = await client.auth.signInWithPassword({email:document.querySelector('#admin-email').value,password:document.querySelector('#admin-password').value});
     if (error) { loginMessage.textContent = error.message; return; }
+    document.querySelector('#current-admin-email').textContent = data.user?.email || '';
     showDashboard(); await loadData();
+  });
+  document.querySelector('#change-email-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    const email = document.querySelector('#new-email').value.trim();
+    const message = document.querySelector('#email-message');
+    message.textContent = 'Requesting email change…';
+    const {error} = await client.auth.updateUser({email});
+    message.textContent = error ? `Could not change email: ${error.message}` : 'Confirmation links have been sent. Follow the instructions in your email to finish changing the sign-in address.';
   });
   document.querySelector('#signout-button').addEventListener('click', async () => { await client.auth.signOut(); showLogin(); });
   document.querySelector('.admin-tabs').addEventListener('click', event => {
@@ -107,5 +147,13 @@
     const {error}=await client.from('gallery_items').delete().eq('id',photo.id);
     if (error) { report(error.message); return; } await loadData();
   });
-  client.auth.getSession().then(({data}) => { if (data.session) { showDashboard(); loadData(); } else showLogin(); });
+  client.auth.onAuthStateChange((event, session) => {
+    if (event === 'PASSWORD_RECOVERY') showReset();
+    else if (event === 'SIGNED_OUT') showLogin();
+  });
+  client.auth.getSession().then(({data}) => {
+    if (new URLSearchParams(window.location.search).has('recovery')) showReset();
+    else if (data.session) { document.querySelector('#current-admin-email').textContent = data.session.user?.email || ''; showDashboard(); loadData(); }
+    else showLogin();
+  });
 })();
