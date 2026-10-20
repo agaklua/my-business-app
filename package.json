@@ -1,1 +1,11 @@
-{"name":"amani-house-hotel-site","version":"1.0.0","private":true,"description":"Responsive static hotel website for The Amani House","scripts":{"start":"node server.js","dev":"node server.js","build":"node -e \"console.log('Static site ready for deployment')\""}}
+{
+  "name": "hagakon-hotell-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Responsive hotel website for HAGAKON HOTELL",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "node -e \"console.log('Static site ready for deployment')\""
+  }
+}
