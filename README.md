@@ -1,4 +1,4 @@
-# HAGAKON HOTELL
+# HAGAKON HOTEL
 
 Responsive hotel website built with HTML, CSS, and JavaScript. A small Node.js server supports local development; Vercel deploys the static site from the connected GitHub repository.
 
