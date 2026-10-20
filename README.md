@@ -1,11 +1,6 @@
-# The Amani House
+# HAGAKON HOTELL
 
-A responsive hotel website made with HTML, CSS, and browser JavaScript. The small Node.js server serves the static files for local development. Vercel serves the same files directly.
-
-## Requirements
-
-- Node.js 18 or newer
-- npm
+Responsive hotel website built with HTML, CSS, and JavaScript, served locally with a small Node.js server and deployed on Vercel from GitHub.
 
 ## Run locally
 
@@ -14,12 +9,10 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. `npm start` runs the same server. There are no third-party npm dependencies.
+Open http://localhost:3000. `npm start` runs the same server.
 
-## Deploy to Vercel
+## Current content notes
 
-Import this project in Vercel and select **Other** as the framework preset. Leave the build command and output directory empty; Vercel serves `index.html`, `styles.css`, and `script.js` as static files. `vercel.json` configures clean URLs.
+The public site uses Mombasa as a city-level location because no street address or map pin was provided. The photos are illustrative, room names/details are provisional, and rates are shown as available on request. Replace these with confirmed property details and actual photos.
 
-## Before publishing
-
-The name, room rates, email, phone and WhatsApp number, and map location are illustrative sample details. Update them in `index.html` for the real property. The enquiry form opens a prefilled email in the guest's email application; it does not submit to a booking backend.
+The enquiry form opens a prefilled email to the hotel address in the visitor's email app. It does not store enquiries. There is not yet an authenticated admin panel or booking database.
