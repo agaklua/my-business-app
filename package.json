@@ -1,8 +1,8 @@
 {
-  "name": "hagakon-hotell-site",
+  "name": "hagakon-hotel-site",
   "version": "1.0.0",
   "private": true,
-  "description": "Responsive hotel website for HAGAKON HOTELL",
+  "description": "Responsive static hotel website for The Amani House",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
