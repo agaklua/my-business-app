@@ -65,11 +65,11 @@ if (bookingForm) bookingForm.addEventListener('submit', async event => {
     });
     if (error) { setResult('We could not submit this just now. Please contact us by email or WhatsApp.', true); return; }
     bookingForm.reset();
-    setResult('Thank you. Your enquiry has been sent to HAGAKON HOTELL. We’ll be in touch soon.');
+    setResult('Thank you. Your enquiry has been sent to HAGAKON HOTEL. We’ll be in touch soon.');
     return;
   }
-  const subject = encodeURIComponent('Stay enquiry — HAGAKON HOTELL');
-  const body = encodeURIComponent(`Hello HAGAKON HOTELL,\n\nI’d like to enquire about a stay.\n\nName: ${data.get('name')}\nEmail: ${data.get('email')}\nPhone: ${data.get('phone') || '—'}\nCheck-in: ${data.get('checkin')}\nCheck-out: ${data.get('checkout')}\nGuests: ${data.get('guests')}\nRoom preference: ${data.get('room')}\n\nNote: ${data.get('message') || '—'}\n\nThank you!`);
+  const subject = encodeURIComponent('Stay enquiry — HAGAKON HOTEL');
+  const body = encodeURIComponent(`Hello HAGAKON HOTEL,\n\nI’d like to enquire about a stay.\n\nName: ${data.get('name')}\nEmail: ${data.get('email')}\nPhone: ${data.get('phone') || '—'}\nCheck-in: ${data.get('checkin')}\nCheck-out: ${data.get('checkout')}\nGuests: ${data.get('guests')}\nRoom preference: ${data.get('room')}\n\nNote: ${data.get('message') || '—'}\n\nThank you!`);
   setResult('Your enquiry is ready. Your email app will open so you can send it directly to our team.');
   window.location.href = `mailto:lualagak90@gmail.com?subject=${subject}&body=${body}`;
 });
