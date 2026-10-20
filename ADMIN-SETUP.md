@@ -1,11 +1,11 @@
-# HAGAKON HOTELL admin setup
+# HAGAKON HOTEL admin setup
 
 The admin page is deployed at `/admin`. The site is connected to its Supabase project, and the database tables, access policies, and photo storage bucket have been installed. The hotel owner can manage their password from **Forgot password?** on the sign-in screen, and change their sign-in email from the **Account** dashboard tab. Supabase sends confirmation links for these changes.
 
 ## Finish admin access
 
 1. In Supabase **Authentication → Users**, add the hotel owner's account. Keep public sign-ups disabled; only accounts you add should access the dashboard.
-2. Visit [the HAGAKON HOTELL admin page](https://the-amani-house.vercel.app/admin) and sign in with that account. Use **Forgot password?** if you need to set or reset its password.
+2. Visit [the HAGAKON HOTEL admin page](https://the-amani-house.vercel.app/admin) and sign in with that account. Use **Forgot password?** if you need to set or reset its password.
 3. In the dashboard, add the hotel's real room names and rates, then upload actual hotel photos. Until then, the public site uses illustrative room details and photos.
 
 The database and site connection are already set up. The public browser key is safe to expose; never put a `service_role` or secret key in the site, GitHub, or a message. The booking form now saves enquiries in Supabase after the guest agrees to the consent notice.
